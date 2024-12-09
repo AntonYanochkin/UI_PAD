@@ -1,0 +1,41 @@
+﻿@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Components
+
+@using UI.Models
+@using UI.Services
+@inject NavigationManager Navigation
+@inject TokenAuthenticationStateProvider AuthProvider
+<CascadingAuthenticationState>
+    <AuthorizeView>
+        <Authorized Context="authContext">
+            <span>Добро пожаловать, @authContext.User.Identity.Name!</span>
+            <button @onclick="Logout">Выйти</button>
+        </Authorized>
+        <NotAuthorized>
+            <a href="login">Войти</a>
+        </NotAuthorized>
+    </AuthorizeView>
+</CascadingAuthenticationState>
+
+@code {
+    private async Task Logout()
+    {
+        await AuthProvider.MarkUserAsLoggedOut();
+        Navigation.NavigateTo("login", forceLoad: true);
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user?.Identity?.IsAuthenticated ?? false)
+        {
+            Console.WriteLine("User is logged in");
+        }
+        else
+        {
+            Console.WriteLine("User is not logged in");
+        }
+    }
+}

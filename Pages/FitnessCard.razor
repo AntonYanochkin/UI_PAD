@@ -1,0 +1,38 @@
+﻿@using UI.Models
+<div>
+
+    @* <img data-src="@WorkoutProgram.ImageUrl"
+    class="lazyloaded"
+    width="800"
+    height="500"
+    alt="@WorkoutProgram.ImageAltText"
+    src="@WorkoutProgram.ImageUrl" >
+
+    <h5>8 Week Fat Loss Workout for Beginners</h5>
+    <p>This 4-day program is designed to help you burn fat without burning too much time on the clock. You'll also learn the basics of fat loss nutrition and recovery.</p>
+    <a class="btn btn-blue" href="@($"/workouts/{WorkoutProgram.Id}")" >View Workout</a> *@
+    @* <img data-src="@WorkoutProgram.ImageUrl"
+    class="lazyloaded"
+    width="800"
+    height="500"
+    alt="@WorkoutProgram.ImageAltText"
+    src="@WorkoutProgram.ImageUrl"> *@
+
+    @if (WorkoutProgram == null)
+    {
+        <p>WorkoutProgram is null</p>
+    }
+    else
+    {
+        <div>
+            <h5>@WorkoutProgram.Name</h5>
+            <p>@WorkoutProgram.Description</p>
+        </div>
+    }
+    <a class="btn btn-blue" href="@($"/workout-programs/{WorkoutProgram.Id}")">View Workout</a>
+
+</div>
+@code {
+    [Parameter]
+    public WorkoutProgram WorkoutProgram { get; set; }
+}

@@ -1,0 +1,49 @@
+﻿@page "/workout-programs"
+@inject IWorkoutService WorkoutService
+@using UI.Services
+@using UI.Models
+@inject TokenAuthenticationStateProvider AuthProvider
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@* //@inject HttpClient Http
+ *@
+
+<h3>Fitness Programs</h3>
+
+@if (workoutPrograms == null)
+{
+    <p>Loading...</p>
+}
+else if (workoutPrograms.Count == 0)
+{
+    <p>No programs available.</p>
+}
+else
+{
+    <div class="programs-container">
+        @foreach (var program in workoutPrograms)
+        {
+            <div class="program-card">
+                <FitnessCard WorkoutProgram="program" />
+            </div>
+        }
+    </div>
+}
+
+
+@code {
+    private List<WorkoutProgram> workoutPrograms;
+
+    protected override async Task OnInitializedAsync()
+    {
+        workoutPrograms = await WorkoutService.GetWorkoutProgramsAsync();
+        //await Http.GetFromJsonAsync<List<WorkoutProgram>>("api/WorkoutProgram");
+        Console.WriteLine($"Workout programs loaded: {workoutPrograms?.Count}");
+
+
+        var user = await AuthProvider.GetAuthenticationStateAsync();
+        Console.WriteLine(user.User.Identity.IsAuthenticated ? "User is logged in" : "User is not logged in");
+    }
+}
+
+

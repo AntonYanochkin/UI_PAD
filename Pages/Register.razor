@@ -1,0 +1,74 @@
+﻿@page "/register"
+@using UI.Models
+@using System.Text.Json
+@inject NavigationManager Navigation
+@inject HttpClient Http
+
+<T />
+<h3>Register</h3>
+<EditForm Model="RegisterModel">
+    <DataAnnotationsValidator />
+    @* <ValidationSummary/> *@
+
+    <div class="form-group">
+        <label for="email">Email</label>
+        <InputText id="email" class="form-control" @bind-Value="RegisterModel.Email" />
+        <ValidationMessage For="@(() => RegisterModel.Email)" />
+    </div>
+    <div class="form-group">
+        <label for="email">UserName</label>
+        <InputText id="email" class="form-control" @bind-Value="RegisterModel.UserName" />
+        <ValidationMessage For="@(() => RegisterModel.UserName)" />
+    </div>
+    <div class="form-group">
+        <label for="password">Password</label>
+        <InputText id="password" class="form-control" @bind-Value="RegisterModel.Password" />
+        <ValidationMessage For="@(() => RegisterModel.Password)" />
+    </div>
+    <div class="form-group">
+        <label for="confirm_password">Confirm Password</label>
+        <InputText id="confirm_password" class="form-control" @bind-Value="RegisterModel.ConfirmPassword" />
+        <ValidationMessage For="@(() => RegisterModel.ConfirmPassword)" />
+    </div>
+    <button @onclick="Register1">Register</button>
+</EditForm>
+@if (Errors != null && Errors.Count > 0)
+{
+        <div class="alert alert-danger">
+            <ul>
+            @foreach (var error in Errors)
+            {
+                        <li>@error</li>
+            }
+            </ul>
+        </div>
+}
+@code {
+    private RegisterModel RegisterModel = new RegisterModel();
+    private List<string> Errors = new List<string>();
+    private async Task Register1()
+    {
+        var response = await Http.PostAsJsonAsync("api/auth/register", RegisterModel);
+
+        if (response.IsSuccessStatusCode)
+        {
+            Navigation.NavigateTo("/login");
+        }
+        else
+        {
+            var errorContent = await response.Content.ReadAsStringAsync();
+            var errorList = JsonSerializer.Deserialize<List<ErrorDetail>>(errorContent, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+            if (errorList != null)
+            {
+                Errors.AddRange(errorList.Select(e => e.Description));
+            }
+            Console.WriteLine($"Error: {string.Join(", ", Errors)}");
+        }
+    }
+    private class ErrorDetail
+    {
+        public string Code { get; set; }
+        public string Description { get; set; }
+    }
+}

@@ -1,0 +1,36 @@
+﻿@page "/workout-programs/{id:int}"
+@using UI.Services
+@using UI.Models
+@inject IWorkoutService WorkoutService
+
+@if (workoutProgram != null)
+{
+    <div class="workout-program-card">
+        <h2>@workoutProgram.Name</h2>
+        <p><strong>Description:</strong> @workoutProgram.Description</p>
+        <p><strong>Difficulty:</strong> @workoutProgram.Level</p>
+        <p><strong>Duration:</strong> @workoutProgram.DurationInMinutes minutes</p>
+        <p><strong>Created on:</strong> @workoutProgram.CreatedDate.ToString(" dd MMMM, yyyy")</p>
+        <p><strong>Content:</strong></p>
+        <div class="content">
+            <p>@workoutProgram.Content</p>
+        </div>
+    </div>
+}
+else
+{
+    <p>Loading...</p>
+}
+
+@code {
+    [Parameter]
+    public int Id { get; set; } // Объявление параметра маршрута
+
+    private WorkoutProgram workoutProgram;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Убедитесь, что метод GetWorkoutProgramByIdAsync работает корректно
+        workoutProgram = await WorkoutService.GetWorkoutProgramByIdAsync(Id);
+    }
+}
